@@ -26,15 +26,28 @@ app.all("*", (req, res, next) => {
 
 app.use((err, req, res, next) => {
     if (process.env.NODE_ENV === "development") {
-        res.status(err.statusCode).json({
+
+        const statusCode = err.statusCode || 500;
+        const status = err.status || 'error';
+
+        res.status(statusCode).json({
             status: err.status,
-            message: err.message
+            message: err.message,
+            stack: err.stack
         });
     } else {
-        res.status(err.statusCode).json({
-            status: err.status,
-            message: 'Ocurrio un error'
-        });
+        if (err.isOperational) {
+            res.status(err.statusCode).json({
+                status: err.status,
+                message: err.message
+            });
+        } else {
+            res.status(500).json({
+                status: 'error',
+                message: 'server error'
+            });
+        }
+
     }
 
 });

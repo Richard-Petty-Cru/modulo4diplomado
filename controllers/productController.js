@@ -1,8 +1,9 @@
 const fs = require("fs");
 const Product = require('../models/Products');
+const catchAsync = require('../utils/catchAsync');
 
 
-exports.getAllProducts = async(req, res) => {
+exports.getAllProducts = catchAsync(async(req, res) => {
     // const products = JSON.parse(
     //     fs.readFileSync(`${__dirname}/../data/products.json`)
     // );
@@ -20,9 +21,9 @@ exports.getAllProducts = async(req, res) => {
             products,
         },
     });
-};
+});
 
-exports.addProduct = async(req, res) => {
+exports.addProduct = catchAsync(async(req, res) => {
 
 
     const newProducto = await Product.create(req.body);
@@ -39,9 +40,9 @@ exports.addProduct = async(req, res) => {
             products: newProducto
         },
     });
-};
+});
 
-exports.getProductById = async(req, res) => {
+exports.getProductById = catchAsync(async(req, res) => {
 
     const foundProduct = await Product.findById(req.params.id);
 
@@ -65,9 +66,9 @@ exports.getProductById = async(req, res) => {
             status: "not found",
         });
     }
-};
+});
 
-exports.updateProduct = async(req, res) => {
+exports.updateProduct = catchAsync(async(req, res) => {
 
     const foundProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
@@ -104,10 +105,10 @@ exports.updateProduct = async(req, res) => {
             status: "not found",
         });
     }
-};
+});
 
 
-exports.deleteProduct = async(req, res) => {
+exports.deleteProduct = catchAsync(async(req, res) => {
 
 
     const eliminarProducto = await Product.findByIdAndDelete(req.params.id);
@@ -145,4 +146,4 @@ exports.deleteProduct = async(req, res) => {
     //         status: "not found",
     //     });
     // }
-};
+});
