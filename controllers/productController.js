@@ -8,10 +8,7 @@ exports.getAllProducts = catchAsync(async(req, res) => {
     //     fs.readFileSync(`${__dirname}/../data/products.json`)
     // );
 
-
     const products = await Product.find();
-
-
 
     res.status(200).json({
         status: "success",
