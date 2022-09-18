@@ -1,9 +1,16 @@
 const fs = require("fs");
+const Product = require('../models/Products');
 
-exports.getAllProducts = (req, res) => {
-    const products = JSON.parse(
-        fs.readFileSync(`${__dirname}/../data/products.json`)
-    );
+
+exports.getAllProducts = async(req, res) => {
+    // const products = JSON.parse(
+    //     fs.readFileSync(`${__dirname}/../data/products.json`)
+    // );
+
+
+    const products = await Product.find();
+
+
 
     res.status(200).json({
         status: "success",
@@ -15,28 +22,37 @@ exports.getAllProducts = (req, res) => {
     });
 };
 
-exports.addProduct = (req, res) => {
+exports.addProduct = async(req, res) => {
 
-    const products = JSON.parse(
-        fs.readFileSync(`${__dirname}/../data/products.json`)
-    );
-    products.push(req.body);
-    fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
+
+    const newProducto = await Product.create(req.body);
+
+    // const products = JSON.parse(
+    //     fs.readFileSync(`${__dirname}/../data/products.json`)
+    // );
+    // products.push(req.body);
+    // fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
 
     res.status(200).json({
         status: "success",
         data: {
-            products,
+            products: newProducto
         },
     });
 };
 
-exports.getProductById = (req, res) => {
-    const products = JSON.parse(
-        fs.readFileSync(`${__dirname}/../data/products.json`)
-    );
+exports.getProductById = async(req, res) => {
 
-    const foundProduct = products.find((p) => p.id == req.params.id);
+    const foundProduct = await Product.findById(req.params.id);
+
+
+    // const products = JSON.parse(
+    //     fs.readFileSync(`${__dirname}/../data/products.json`)
+    // );
+
+    // const foundProduct = products.find((p) => p.id == req.params.id);
+
+
     if (foundProduct) {
         res.status(200).json({
             status: "success",
@@ -51,23 +67,28 @@ exports.getProductById = (req, res) => {
     }
 };
 
-exports.updateProduct = (req, res) => {
-    const products = JSON.parse(
-        fs.readFileSync(`${__dirname}/../data/products.json`)
-    );
-    //fs.writeFileSync(`${__dirname}/../data/products.json`, '');
-    const foundProduct = products.find((p) => p.id == req.params.id);
+exports.updateProduct = async(req, res) => {
+
+    const foundProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    // const products = JSON.parse(
+    //     fs.readFileSync(`${__dirname}/../data/products.json`)
+    // );
+    // //fs.writeFileSync(`${__dirname}/../data/products.json`, '');
+    // const foundProduct = products.find((p) => p.id == req.params.id);
 
     if (foundProduct) {
 
 
-        products.map(function(dato) {
-            if (dato.id == foundProduct.id) {
-                dato.name = req.body.name;
-                dato.price = req.body.price;
-                dato.category = req.body.category;
-            }
-        });
+        // products.map(function(dato) {
+        //     if (dato.id == foundProduct.id) {
+        //         dato.name = req.body.name;
+        //         dato.price = req.body.price;
+        //         dato.category = req.body.category;
+        //     }
+        // });
+
+        const products = await Product.find();
 
         res.status(200).json({
             status: "success",
@@ -76,7 +97,7 @@ exports.updateProduct = (req, res) => {
             },
         });
 
-        fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
+        //fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
 
     } else {
         res.status(404).json({
@@ -86,29 +107,42 @@ exports.updateProduct = (req, res) => {
 };
 
 
-exports.deleteProduct = (req, res) => {
-    const products = JSON.parse(
-        fs.readFileSync(`${__dirname}/../data/products.json`)
-    );
-
-    const posicion = products.findIndex((p) => p.id == req.params.id);
-    if (posicion >= 0) {
+exports.deleteProduct = async(req, res) => {
 
 
-        products.splice(posicion, 1);
+    const eliminarProducto = await Product.findByIdAndDelete(req.params.id);
 
-        res.status(200).json({
-            status: "success",
-            data: {
-                product: posicion,
-            },
-        });
+    const products = await Product.find();
 
-        fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
+    res.status(200).json({
+        status: "success",
+        data: {
+            product: products,
+        },
+    });
 
-    } else {
-        res.status(404).json({
-            status: "not found",
-        });
-    }
+    // const products = JSON.parse(
+    //     fs.readFileSync(`${__dirname}/../data/products.json`)
+    // );
+
+    // const posicion = products.findIndex((p) => p.id == req.params.id);
+    // if (posicion >= 0) {
+
+
+    //     products.splice(posicion, 1);
+
+    //     res.status(200).json({
+    //         status: "success",
+    //         data: {
+    //             product: posicion,
+    //         },
+    //     });
+
+    //     fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
+
+    // } else {
+    //     res.status(404).json({
+    //         status: "not found",
+    //     });
+    // }
 };
